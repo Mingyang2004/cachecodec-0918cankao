@@ -1,0 +1,59 @@
+评测任务 我现在训练了三组的model pair的不同设置的训练/ossfs/workspace/cachecodec-output/local/runs/checkpoints，receiver都是同一个qwen3-0.6b模型； 之前我也评测过，但是现在三组所有训练权
+    重都得到了，我也想按照我的最新标准评测逻辑进行一起评测；不仅是acc还有时间压缩率等等规范， 
+    
+DCT和量化是GPu上，从上编码开始就挪到CPU了
+
+按该 YAML 的配置，传输流程是“每个 Sharer layer 的 KV 单独编码、单独经本机 socket 发送、单独解码”，而不
+  是等全部 KV 拼成一个大包后再发送。
+
+  Sharer 逐层 prefill
+    └─ 某层 KV 首次产生
+         └─ 放入最多 4 项的队列
+              └─ 单后台 worker：
+                   GPU DCT（FP32）→ INT16 量化 → 拷到 CPU/NumPy → zlib4
+                   → pickle 序列化
+                   → socketpair 发送
+                   → pickle 反序列化 → zlib4 解码 → GPU 侧重建该层 KV
+    └─ 所有层重建完成
+         └─ fuser 将 Sharer KV 通过 projector 融合进 Receiver 的 seed cache
+              └─ Receiver 生成答案
+
+  具体配置含义：
+
+  - layer_streaming.enabled: true：启用逐层发送。StreamingDynamicCache 在某层第一次写入 KV 时立即发布该
+    层任务。发布逻辑 (rosetta/cachejpeg_rosetta/layer_streaming.py:28)
+
+  - queue_size: 4：最多积压 4 个待压缩层；满了会阻塞 Sharer 继续提交，形成背压。
+  - compute.backend: gpu、transform_dtype: float32：DCT/反 DCT 在 GPU 上以 FP32 做；量化后的数据交给
+    zlib4 压缩。
+
+  - transport.mode: socketpair：每一层包都会创建一对本机 Unix socket，并以“8-byte 长度头 + pickle
+    payload”发送。这是实际内核 socket I/O，但不是跨机器网络。实现 (rosetta/cachejpeg/transport.py:82)
+
+  - bandwidth_bytes_per_sec: 6250000：发送线程会先 sleep payload_bytes / 6,250,000 秒来模拟 6.25 MB/s 链
+    路，再写 socket；fixed_latency_ms: 0 表示不额外叠加固定延迟。
+
+  - timeout_seconds: 120 与 max_payload_bytes: 8 GiB 分别限制单层传输超时和最大帧大小。
+
+  一个实现细节：该 fuser streaming 路径当前只建立了一个后台 worker 和一个 CUDA stream；YAML 中的
+  gpu_streams: 1、max_inflight_layers: 4 会被解析，但在这条 LayerCompressionPipeline 路径里没有实际参与
+  worker 数或 in-flight 限制，实际并发控制主要就是 queue_size: 4。pipeline 构造处 (rosetta/
+  cachejpeg_rosetta/wrapper.py:704)
+
+  另外，基于刚加入的 checkpoint 检查，这份 YAML 当前写的 checkpoint 路径不存在时会在模型加载阶段直接报
+  错，因此不会真正开始上述传输；必须先提供含 projector_N.pt 的 checkpoint 目录。
+
+
+  并帮我确定下：
+  所有都是同一个传输带宽6.25MB/s，跟我的quant有关的经过熵编码都是zlib4编码；纯concat和纯fusion没有时间上的优化就是直接传输原精度直接传，时间上的优化我主要做了DCT放在GPU上计算，以及streaming这个操作，帮我确认下； 单独jcb也有我的时间优化，jcb+quant是熵编码+优化
+
+  帮我检查下我的逻辑是否正确，并生成三组model pair我做过对应训练权重/ossfs/workspace/cachecodec-output/local/runs/checkpoints对应的所有准确的评测config，四个bench；  准确加载对应的训练权重，参数设置好； 另外还有一些不需要训练权重的评测，sharer-only receiver-only text-to-text 每一组model pair上面都要做，加载好对应模型，也分别在四个bench生成对应的config，所有的generate_max_tokens都是16  T2T的max_communication设置为64 
+
+  时间我关注端到端时间，子时间包括encode ；transmit； sharer prefill；receiver prefill ； decode ； TTFT等等  帮我准确记录好
+
+
+
+  还有些潜在的问题：
+  1. 我记得之前llama--qwen虽然权重训练完了，但是评测好像有点问题，注意评测在qwen-qwen 和 llama--qwen之间的适配性
+
+  生成完对应准确的config之后，我要进行八卡评测，加载权重在对应位置的最新steps的权重，每张卡同时只评测一个实验； 生成config最好规范点，别太随便放位置，结果也是； 我想让你帮我检查逻辑以及各个无误后帮我生成一个一次性运行的sh文件，每次运行检查哪些已经评测过了就跳过评测没评测完的实验(因为实验总会因为别的原因中断，要继续评测而不是反复评测，实验比较多)；streaming要开以及DCT要确保在GPU计算 
