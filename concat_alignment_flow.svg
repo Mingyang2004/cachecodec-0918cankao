@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#52657b"/></marker>
+    <style>
+      .title{font:700 32px sans-serif;fill:#11243b}.sub{font:500 17px sans-serif;fill:#50657d}.lane{font:700 19px sans-serif;fill:#fff}.h{font:700 18px sans-serif;fill:#18324d}.p{font:500 15px sans-serif;fill:#36506a}.note{font:500 14px sans-serif;fill:#52657b}.box{stroke-width:2}.arrow{stroke:#52657b;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="#f7fafc"/>
+  <text x="70" y="70" class="title">Concat 对齐：Split-channel 作为 Receiver Virtual Prefix</text>
+  <text x="70" y="102" class="sub">cache_alignment = concat · 每层 last_aligned 路由 · K/V 独立 64 维 latent · SFT Cross Entropy</text>
+
+  <rect x="55" y="145" width="1490" height="245" rx="18" fill="#e7f0ff"/>
+  <rect x="55" y="145" width="150" height="245" rx="18" fill="#2869b3"/><text x="88" y="275" class="lane">SHARER</text>
+  <rect x="235" y="185" width="190" height="125" rx="14" fill="#fff" stroke="#5b92d1" class="box"/>
+  <text x="270" y="225" class="h">Prompt</text><text x="261" y="254" class="p">system / user</text><text x="275" y="280" class="p">不含回答</text>
+  <path d="M425 248 H500" class="arrow"/>
+  <rect x="500" y="185" width="215" height="125" rx="14" fill="#fff" stroke="#5b92d1" class="box"/>
+  <text x="534" y="225" class="h">冻结 Sharer LLM</text><text x="537" y="254" class="p">前向 no_grad</text><text x="534" y="280" class="p">提取 pre-RoPE KV</text>
+  <path d="M715 248 H790" class="arrow"/>
+  <rect x="790" y="172" width="255" height="150" rx="14" fill="#fff" stroke="#8b73c9" class="box"/>
+  <text x="822" y="214" class="h">last_aligned 层路由</text><text x="830" y="245" class="p">Sharer layer →</text><text x="822" y="272" class="p">Receiver 对应 layer</text>
+  <path d="M1045 248 H1120" class="arrow"/>
+  <rect x="1120" y="172" width="330" height="150" rx="14" fill="#faf7ff" stroke="#8b73c9" class="box"/>
+  <text x="1155" y="214" class="h">Split-channel transport</text><text x="1152" y="245" class="p">K: H×D → 64   ｜   V: H×D → 64</text><text x="1162" y="274" class="p">K/V 独立 encoder</text>
+
+  <rect x="55" y="430" width="1490" height="365" rx="18" fill="#e9f8f1"/>
+  <rect x="55" y="430" width="150" height="365" rx="18" fill="#23865d"/><text x="77" y="620" class="lane">RECEIVER</text>
+  <path d="M1285 322 V477 H1175" class="arrow"/>
+  <rect x="875" y="477" width="300" height="130" rx="14" fill="#fff" stroke="#36a875" class="box"/>
+  <text x="910" y="517" class="h">独立 K/V decoder</text><text x="898" y="546" class="p">64 → 256 → Receiver H×D</text><text x="902" y="573" class="p">再应用 Receiver RoPE</text>
+  <path d="M875 542 H800" class="arrow"/>
+  <rect x="480" y="477" width="320" height="130" rx="14" fill="#fff" stroke="#36a875" class="box"/>
+  <text x="520" y="517" class="h">Virtual Prefix KV cache</text><text x="523" y="546" class="p">每个 Receiver layer 一组 KV</text><text x="542" y="573" class="p">不是与 token hidden state 相加</text>
+  <path d="M480 542 H405" class="arrow"/>
+  <rect x="230" y="465" width="175" height="155" rx="14" fill="#fff" stroke="#36a875" class="box"/>
+  <text x="263" y="505" class="h">Receiver 输入</text><text x="253" y="534" class="p">prompt + assistant</text><text x="255" y="561" class="p">teacher forcing</text><text x="273" y="588" class="p">labels</text>
+  <path d="M405 542 C430 660,715 690,875 660" class="arrow"/>
+  <rect x="875" y="645" width="300" height="105" rx="14" fill="#fff" stroke="#36a875" class="box"/>
+  <text x="918" y="685" class="h">冻结 Receiver LLM</text><text x="924" y="714" class="p">prefix + receiver prompt → logits</text>
+  <path d="M1175 698 H1250" class="arrow"/>
+  <rect x="1250" y="645" width="235" height="105" rx="14" fill="#fff4e7" stroke="#e29d43" class="box"/>
+  <text x="1298" y="685" class="h">SFT CE Loss</text><text x="1280" y="714" class="p">仅 assistant token</text>
+  <path d="M1368 645 C1368 585,1290 590,1175 565" class="arrow"/>
+  <text x="1190" y="612" class="note">梯度仅回传至 K/V encoder + decoder</text>
+  <text x="75" y="855" class="note">要点：通信内容是压缩后、重建为 Receiver 几何的 K/V prefix；当前配置未启用量化、DCT 或 rate loss。</text>
+</svg>

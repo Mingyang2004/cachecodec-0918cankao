@@ -1,0 +1,87 @@
+# Split-channel concat evaluation using the standard CacheJPEG wire codec.
+#
+# Device placement:
+#   DCT + dense INT16 quantization: GPU (FP32 transform)
+#   zlib6 entropy coding: CPU, after the quantized tensor is copied to NumPy
+#
+# This checkpoint maps Receiver layers 0-4 to the same Sharer layer 0.  The
+# streaming pipeline fans that completed Sharer layer out through the five
+# corresponding projectors and transports each Receiver-layer payload
+# independently.
+model:
+  model_name: cachejpeg_rosetta
+  rosetta_config:
+    receiver_model: "/home/ubuntu/.cache/huggingface/hub/models--Qwen--Qwen3-0.6B/snapshots/c1899de289a04d12100db370d81485cdf75e47ca"
+    sharer_model: "/home/ubuntu/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775"
+    checkpoints_dir: "/data/smy_data/Cachecodec2/Cachecodec/local/split/checkpoints/concat_split_channel_fusion_qwen25_05_to_qwen3_06/final"
+
+  cachejpeg_rosetta_config:
+    cache_alignment: concat
+    fusion_type: original
+
+    concat_projector:
+      type: split_channel_fusion
+      key_latent_dim: 64
+      value_latent_dim: 64
+
+    layer_streaming:
+      enabled: true
+      queue_size: 4
+      gpu_streams: 2
+      max_inflight_layers: 4
+
+    codec:
+      method: cachejpeg
+      homo_c2c_kv_src: /data/smy/HomoC2C-KV/src
+
+      compute:
+        backend: gpu
+        transform_dtype: float32
+
+      anchors:
+        sink_count: 1
+        recent_count: 0
+        preserve_options: false
+
+      block:
+        mode: global
+        size: 64
+
+      quant:
+        q_global: 1.0
+        low: 1.0
+        high: 8.0
+        curve: quadratic
+        key_scale: 1.0
+        value_scale: 1.0
+        clip_int16: true
+
+      entropy:
+        representation: dense_int16
+        backend: zlib6
+
+      transport:
+        mode: socketpair
+        timeout_seconds: 120
+        max_payload_bytes: 8589934592
+        bandwidth_bytes_per_sec: 50000000
+        fixed_latency_ms: 0
+
+    adaptive_quant_table:
+      enabled: false
+
+  generation_config:
+    do_sample: false
+    max_new_tokens: 16
+
+output:
+  output_dir: "${CACHECODEC_RUN_ROOT}/results/concat_split_channel_fusion_cachejpeg_gpu_transport/openbookqa"
+
+eval:
+  dataset: openbookqa
+  local_jsonl_file: /data/smy/AdaptiveJPEG-KV/data/c2c_general_mcq_test/openbookqa_test.jsonl
+  gpu_ids: [0]
+  answer_method: generate
+  use_cot: false
+  use_template: true
+  sample_interval: 1

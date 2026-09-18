@@ -1,0 +1,24 @@
+model:
+  model_name: cachejpeg_rosetta
+  rosetta_config:
+    receiver_model: /home/ubuntu/.cache/huggingface/hub/models--Qwen--Qwen3-0.6B/snapshots/c1899de289a04d12100db370d81485cdf75e47ca
+    sharer_model: /data/smy_data/local/models/Qwen2.5-1.5B-Instruct
+    checkpoints_dir: /data/smy/output/cachecodec/checkpoints/qwen3_0.6b_qwen2.5_1.5b_openhermes_500k_concat_lcf_projected_kv_adaptive_quant
+  cachejpeg_rosetta_config:
+    cache_alignment: concat
+    fusion_type: original
+    concat_projector: {type: lcf_projected_kv, shared_latent_dim: 128, key_latent_dim: 64, value_latent_dim: 64}
+    adaptive_quant_table: {enabled: true, allocator_type: projected_layer_kv, feature_bands: 8, hidden_dim: 128, alpha_candidates: [0.125, 0.25, 0.5, 1.0, 2.0], scale_side_info_bits: 32}
+    transport: {mode: socketpair, bandwidth_bytes_per_sec: 50000000, fixed_latency_ms: 0}
+    layer_streaming: {enabled: false}
+  generation_config: {do_sample: false, max_new_tokens: 16}
+output: {output_dir: /data/smy/output/cachecodec/results/openhermes_lcf_projected_kv/adaptive_packet/arc_challenge}
+eval:
+  dataset: ai2-arc
+  local_jsonl_file: /data/smy/AdaptiveJPEG-KV/data/c2c_general_mcq_test/arc_challenge_test.jsonl
+  gpu_ids: [0]
+  answer_method: generate
+  use_cot: false
+  use_template: true
+  sample_interval: 1
+  rosetta_checkpoint_subfolder: final

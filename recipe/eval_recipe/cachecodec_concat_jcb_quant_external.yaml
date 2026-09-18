@@ -1,0 +1,39 @@
+model:
+  model_name: cachejpeg_rosetta
+  rosetta_config:
+    receiver_model: "${CACHECODEC_MODEL_ROOT}/Qwen3-0.6B"
+    sharer_model: "${CACHECODEC_MODEL_ROOT}/Qwen2.5-0.5B-Instruct"
+    checkpoints_dir: "${CACHECODEC_RUN_ROOT}/checkpoints/concat_jcb_qwen25_05_to_qwen3_06/final"
+  cachejpeg_rosetta_config:
+    cache_alignment: concat
+    fusion_type: original
+    concat_projector:
+      type: jcb
+      shared_latent_dim: 128
+      key_latent_dim: 64
+      value_latent_dim: 64
+    codec:
+      method: jcb_dct_int16
+      fixed_jcb_packet:
+        enabled: true
+        beta: 1.0
+        low: 1.0
+        high: 8.0
+        scale_mode: none
+      transport:
+        mode: socketpair
+    adaptive_quant_table:
+      enabled: false
+  generation_config:
+    do_sample: false
+    max_new_tokens: 16
+output:
+  output_dir: "${CACHECODEC_RUN_ROOT}/results/concat_jcb_quant"
+eval:
+  dataset: mmlu-redux
+  local_jsonl_file: "${CACHECODEC_DATA_ROOT}/mmlu_redux_test.jsonl"
+  gpu_ids: [1]
+  answer_method: generate
+  use_cot: false
+  use_template: true
+  sample_interval: 1

@@ -1,0 +1,8 @@
+{
+  "route": "Concat",
+  "pruned_high_frequency_pct": 85,
+  "retained_low_frequency_pct": 15,
+  "accuracy": 0.452,
+  "num_subjects": 1,
+  "summary": "/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_85pct/cachejpeg_rosetta_openbookqa_generate_20260918_042934_summary.json"
+}

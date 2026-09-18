@@ -1,0 +1,11 @@
+route,retained_low_frequency_pct,pruned_high_frequency_pct,accuracy,num_subjects,summary
+C2C Fusion,0.0,100.0,0.422,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_100pct/cachejpeg_rosetta_openbookqa_generate_20260918_044728_summary.json
+C2C Fusion,1.0,99.0,0.404,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_99pct/cachejpeg_rosetta_openbookqa_generate_20260918_044633_summary.json
+C2C Fusion,5.0,95.0,0.406,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_95pct/cachejpeg_rosetta_openbookqa_generate_20260918_043707_summary.json
+C2C Fusion,15.0,85.0,0.414,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_85pct/cachejpeg_rosetta_openbookqa_generate_20260918_043614_summary.json
+C2C Fusion,30.0,70.0,0.39,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_70pct/cachejpeg_rosetta_openbookqa_generate_20260918_043520_summary.json
+C2C Fusion,50.0,50.0,0.396,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_50pct/cachejpeg_rosetta_openbookqa_generate_20260918_043424_summary.json
+C2C Fusion,60.0,40.0,0.384,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_40pct/cachejpeg_rosetta_openbookqa_generate_20260918_043328_summary.json
+C2C Fusion,75.0,25.0,0.388,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_25pct/cachejpeg_rosetta_openbookqa_generate_20260918_043231_summary.json
+C2C Fusion,90.0,10.0,0.39,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_10pct/cachejpeg_rosetta_openbookqa_generate_20260918_043135_summary.json
+C2C Fusion,100.0,0.0,0.394,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_00pct/cachejpeg_rosetta_openbookqa_generate_20260918_042210_summary.json

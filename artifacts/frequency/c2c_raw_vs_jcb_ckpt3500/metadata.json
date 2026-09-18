@@ -1,0 +1,18 @@
+{
+  "dataset": "OpenHermes-2.5 train",
+  "seed": 42,
+  "candidate_pool": 80000,
+  "samples_used": 512,
+  "token_length_min": 34,
+  "token_length_mean": 91.962890625,
+  "token_length_max": 1932,
+  "layers": [
+    0,
+    6,
+    12,
+    18,
+    23
+  ],
+  "method": "unscaled per-sample orthonormal DCT(sequence) -> squared coefficients -> channel mean -> interpolate bins only by normalized frequency -> sample mean; no RMS, scale, quantization, or power normalization in plotted curves",
+  "checkpoint": "/data/smy_data/Cachecodec2/Cachecodec/local/joint/checkpoints/c2c_jcb_qwen25_05_to_qwen3_06/checkpoint-3500"
+}

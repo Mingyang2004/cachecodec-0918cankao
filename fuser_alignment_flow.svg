@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#52657b"/></marker>
+    <style>
+      .title{font:700 32px sans-serif;fill:#11243b}.sub{font:500 17px sans-serif;fill:#50657d}.lane{font:700 19px sans-serif;fill:#fff}.h{font:700 18px sans-serif;fill:#18324d}.p{font:500 15px sans-serif;fill:#36506a}.note{font:500 14px sans-serif;fill:#52657b}.box{stroke-width:2}.arrow{stroke:#52657b;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="#f7fafc"/>
+  <text x="70" y="70" class="title">Fuser 对齐：Sharer KV 与 Receiver 原生 KV 的逐层融合</text>
+  <text x="70" y="102" class="sub">cache_alignment = fuser · 原始 C2C projector/fuser 路径 · 可选 Sharer-side codec</text>
+
+  <rect x="55" y="145" width="1490" height="250" rx="18" fill="#e7f0ff"/>
+  <rect x="55" y="145" width="150" height="250" rx="18" fill="#2869b3"/><text x="88" y="277" class="lane">SHARER</text>
+  <rect x="240" y="185" width="220" height="125" rx="14" fill="#fff" stroke="#5b92d1" class="box"/>
+  <text x="274" y="225" class="h">Sharer prompt</text><text x="274" y="254" class="p">生成 Sharer KV cache</text><text x="278" y="280" class="p">可选 token alignment</text>
+  <path d="M460 248 H540" class="arrow"/>
+  <rect x="540" y="185" width="245" height="125" rx="14" fill="#fff" stroke="#5b92d1" class="box"/>
+  <text x="575" y="225" class="h">Sharer KV</text><text x="570" y="254" class="p">每层 [B, Hs, S, Ds]</text><text x="571" y="280" class="p">可先经 codec 重建</text>
+  <path d="M785 248 H865" class="arrow"/>
+  <rect x="865" y="172" width="285" height="150" rx="14" fill="#faf7ff" stroke="#8b73c9" class="box"/>
+  <text x="906" y="214" class="h">C2C projector</text><text x="896" y="245" class="p">Sharer 几何 → Receiver 几何</text><text x="905" y="274" class="p">按层路由 / 投影</text>
+
+  <rect x="55" y="435" width="1490" height="350" rx="18" fill="#e9f8f1"/>
+  <rect x="55" y="435" width="150" height="350" rx="18" fill="#23865d"/><text x="76" y="620" class="lane">RECEIVER</text>
+  <rect x="245" y="475" width="245" height="130" rx="14" fill="#fff" stroke="#36a875" class="box"/>
+  <text x="281" y="515" class="h">Receiver prompt</text><text x="280" y="544" class="p">自身 token / position</text><text x="285" y="571" class="p">先得到原生 KV</text>
+  <path d="M490 540 H590" class="arrow"/>
+  <rect x="590" y="465" width="330" height="150" rx="14" fill="#fff" stroke="#36a875" class="box"/>
+  <text x="650" y="507" class="h">逐层 Fuser</text><text x="628" y="537" class="p">Receiver 原生 KV + 投影 Sharer KV</text><text x="650" y="565" class="p">融合 / residual / gate</text><text x="646" y="592" class="p">得到更新后的 Receiver KV</text>
+  <path d="M1008 322 V465" class="arrow"/>
+  <path d="M920 540 H1015" class="arrow"/>
+  <rect x="1015" y="475" width="245" height="130" rx="14" fill="#fff" stroke="#36a875" class="box"/>
+  <text x="1061" y="515" class="h">Receiver LLM</text><text x="1048" y="544" class="p">使用融合后 KV</text><text x="1060" y="571" class="p">输出 logits</text>
+  <path d="M1260 540 H1335" class="arrow"/>
+  <rect x="1335" y="475" width="155" height="130" rx="14" fill="#fff4e7" stroke="#e29d43" class="box"/>
+  <text x="1372" y="525" class="h">Task Loss</text><text x="1368" y="554" class="p">CE / 可选</text><text x="1360" y="580" class="p">rate loss</text>
+  <path d="M1410 605 C1340 705,1060 710,915 615" class="arrow"/>
+  <text x="958" y="685" class="note">梯度回传至 projector、fuser 与可选 codec；是否冻结 LLM 由训练配置决定。</text>
+  <text x="75" y="850" class="note">区别：Fuser 修改 Receiver 已有 KV；Concat 则构造独立 virtual-prefix KV 并在 Receiver prefill 时拼接。</text>
+</svg>

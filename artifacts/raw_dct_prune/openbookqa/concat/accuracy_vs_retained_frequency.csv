@@ -1,0 +1,11 @@
+route,retained_low_frequency_pct,pruned_high_frequency_pct,accuracy,num_subjects,summary
+Concat,0.0,100.0,0.0,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_100pct/cachejpeg_rosetta_openbookqa_generate_20260918_044541_summary.json
+Concat,1.0,99.0,0.456,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_99pct/cachejpeg_rosetta_openbookqa_generate_20260918_044513_summary.json
+Concat,5.0,95.0,0.456,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_95pct/cachejpeg_rosetta_openbookqa_generate_20260918_043039_summary.json
+Concat,15.0,85.0,0.452,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_85pct/cachejpeg_rosetta_openbookqa_generate_20260918_042934_summary.json
+Concat,30.0,70.0,0.45,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_70pct/cachejpeg_rosetta_openbookqa_generate_20260918_042830_summary.json
+Concat,50.0,50.0,0.454,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_50pct/cachejpeg_rosetta_openbookqa_generate_20260918_042728_summary.json
+Concat,60.0,40.0,0.454,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_40pct/cachejpeg_rosetta_openbookqa_generate_20260918_042627_summary.json
+Concat,75.0,25.0,0.446,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_25pct/cachejpeg_rosetta_openbookqa_generate_20260918_042526_summary.json
+Concat,90.0,10.0,0.454,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_10pct/cachejpeg_rosetta_openbookqa_generate_20260918_042427_summary.json
+Concat,100.0,0.0,0.46,1,/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_00pct/cachejpeg_rosetta_openbookqa_generate_20260918_042107_summary.json

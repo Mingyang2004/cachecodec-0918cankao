@@ -1,0 +1,8 @@
+{
+  "route": "C2C Fusion",
+  "pruned_high_frequency_pct": 40,
+  "retained_low_frequency_pct": 60,
+  "accuracy": 0.384,
+  "num_subjects": 1,
+  "summary": "/data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/c2c_fusion/pruned_40pct/cachejpeg_rosetta_openbookqa_generate_20260918_043328_summary.json"
+}

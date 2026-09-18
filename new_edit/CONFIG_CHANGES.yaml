@@ -1,0 +1,21 @@
+# Apply these keys to every timed benchmark configuration.  Do not use a
+# different transport bandwidth for T2T than CacheCodec.
+
+transport:
+  mode: socketpair
+  bandwidth_bytes_per_sec: 20000000.0
+  fixed_latency_ms: 0.0
+  timeout_seconds: 120.0
+
+# Place the same block under t2t_config for the T2T baseline:
+t2t_config:
+  transport:
+    mode: socketpair
+    bandwidth_bytes_per_sec: 20000000.0
+    fixed_latency_ms: 0.0
+
+# Packet profiling inserts CUDA synchronization around individual DCT stages.
+# It is for a strict component breakdown run.  Use ``off`` for a separate
+# throughput run, while always retaining evaluator model_e2e_ms as e2e truth.
+codec:
+  timing_mode: profile

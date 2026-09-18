@@ -1,0 +1,35 @@
+model:
+  model_name: cachejpeg_rosetta
+  rosetta_config:
+    base_model: /home/ubuntu/.cache/huggingface/hub/models--Qwen--Qwen3-0.6B/snapshots/c1899de289a04d12100db370d81485cdf75e47ca
+    teacher_model: /home/ubuntu/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775
+    checkpoints_dir: /data/smy_data/local/checkpoints/cache-kv/0.6+0.5B/ablation/openhermes_50k_concat_direct_pre_rope_mlp
+  cachejpeg_rosetta_config:
+    cache_alignment: concat
+    fusion_type: original
+    concat_projector:
+      type: direct_pre_rope_mlp
+    adaptive_quant_table:
+      enabled: false
+    codec:
+      method: raw
+      transport:
+        mode: socketpair
+      raw_dct_prune:
+        enabled: true
+        prune_ratio: 0.5
+  generation_config:
+    do_sample: false
+    max_new_tokens: 16
+output:
+  output_dir: /data/smy_data/Cachecodec2/Cachecodec/artifacts/raw_dct_prune/openbookqa/concat/pruned_50pct
+eval:
+  dataset: openbookqa
+  local_jsonl_file: /data/smy/AdaptiveJPEG-KV/data/c2c_general_mcq_test/openbookqa_test.jsonl
+  gpu_ids:
+  - 0
+  answer_method: generate
+  use_cot: false
+  use_template: true
+  sample_interval: 1
+  rosetta_checkpoint_subfolder: final

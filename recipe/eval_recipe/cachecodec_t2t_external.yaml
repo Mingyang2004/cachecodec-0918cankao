@@ -1,0 +1,19 @@
+model:
+  model_name: t2t
+  t2t_config:
+    receiver_model: "${CACHECODEC_MODEL_ROOT}/Qwen3-0.6B"
+    sharer_model: "${CACHECODEC_MODEL_ROOT}/Qwen2.5-0.5B-Instruct"
+    communication_max_new_tokens: 128
+  generation_config:
+    do_sample: false
+    max_new_tokens: 16
+output:
+  output_dir: "${CACHECODEC_RUN_ROOT}/results/t2t"
+eval:
+  dataset: mmlu-redux
+  local_jsonl_file: "${CACHECODEC_DATA_ROOT}/mmlu_redux_test.jsonl"
+  gpu_ids: [1]
+  answer_method: generate
+  use_cot: false
+  use_template: true
+  sample_interval: 1
